@@ -1,5 +1,6 @@
 # Turbo_Log4J_ADC
 Toolkit to automate community fixes on the ADC regarding the Log4j vulnerability 
+Written by Mick Hilhorst (LooseDevGoose).
 
 Works with the KIVY(MD) library and the NITRO API.
 Code is written in python, application is a packaged .exe.
