@@ -19,7 +19,8 @@ Got your own hot fix that needs to be automated for community purposes?
 Contact me on LinkedIn: https://www.linkedin.com/in/mick-hilhorst/
 ```diff
 +- Download the .EXE:
-```diff
+```
+
 https://mickhilhorst.com/wp-content/uploads/2021/12/Turbo_Log4j_ADC.zip
 
 
