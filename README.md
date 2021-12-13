@@ -13,7 +13,7 @@ Always backup your ADC before implementing anything.
 
 List of applications included:
 
-1.Mads Petersen's Regex fix: https://www.linkedin.com/posts/mads-behrendt-petersen-43049613_log4j-citrixctp-security-activity-6875776323139248128-P_N3
+1. Eric Julien & Mads Petersen's Regex fix: https://www.linkedin.com/posts/mads-behrendt-petersen-43049613_log4j-citrixctp-security-activity-6875776323139248128-P_N3
 
 
 Got your own hot fix that needs to be automated for community purposes?
