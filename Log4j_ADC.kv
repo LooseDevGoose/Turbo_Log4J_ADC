@@ -1,0 +1,183 @@
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+
+#############################################################################
+#Windows Manager, contains all windows
+WindowManager:
+    LoginScreen:
+    MainMenu:
+#############################################################################
+
+<ListItemWithCheckbox>:
+    id: LI
+    msg: ''
+    IconLeftWidget:
+        icon: root.icon
+    RightCheckbox:
+        id: cb
+
+#############################################################################
+#Initial Login Screen (First Screen!)
+<LoginScreen>:
+    name: "LoginScreen"
+
+    #Used for Login Background Color
+    MDBoxLayout:
+
+        md_bg_color: get_color_from_hex("#344954")
+
+
+    #Used for Login Card
+    MDCard:
+
+        size_hint: None, None
+        size: 400, 500
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 30
+        radius: 30
+        #padding: 25
+        spacing: 25
+        orientation: 'vertical'
+        md_bg_color: get_color_from_hex("#292929")
+
+
+        #Label containing welcome text
+        MDLabel:
+            id: welcome_label
+            halign: 'center'
+            text: "Turbo_Log4j_ADC 0.1.0"
+            font_size: 32
+
+
+
+        #text field for ADC IP
+        MDTextField:
+            id: ns_ip
+            text: ""
+            hint_text: "Netscaler IP"
+            icon_right: "ip-network"
+            size_hint_x: None
+            width: 200
+            font_size: 12
+            pos_hint: {"center_x": 0.5}
+            mode: "rectangle"
+            required: True
+            max_text_length: 15
+
+        #Text field for username
+        MDTextField:
+            id: ns_username
+            hint_text: "Username"
+            text: ""
+            helper_text: "Hopefully not nsroot ;)"
+            helper_text_mode: "on_focus"
+            icon_right: "account"
+            size_hint_x: None
+            width: 200
+            font_size: 12
+            pos_hint: {"center_x": 0.5}
+            mode: "rectangle"
+            required: True
+
+        #Text field for password
+        MDTextField:
+            id: ns_password
+            text: ""
+            hint_text: "Password"
+            icon_right: "eye-off"
+            size_hint_x: None
+            width: 200
+            font_size: 12
+            pos_hint: {"center_x": 0.5}
+            password: True
+            mode: "rectangle"
+            required: True
+
+        #Text field for username
+        ListItemWithCheckbox:
+
+            id: https_box
+            text: "HTTPS?"
+
+
+
+        #Button to submit data to submitinfo()
+        MDFillRoundFlatButton:
+            text: "Login to ADC"
+            font_size: 12
+            pos_hint: {"center_x": 0.5}
+            on_press: root.submitinfo()
+            on_press: app.change_screen('MainMenu') if root.submitinfo()==True else "LoginScreen"
+
+        #Button to quickly clear all text field information
+        MDFillRoundFlatButton:
+            text: "Clear Information"
+            font_size: 12
+            pos_hint: {"center_x": 0.5}
+            on_press: root.cleardata()
+
+
+        #Invisible label that can parse error messages if needed
+        Label:
+            id: error_label_login
+            italic: True
+            color: (1,0,0)
+            text: ""
+            font_size: 16
+            halign: 'center'
+            pos_hint: {"center_x": 0.5}
+
+<MainMenu>
+    name: "MainMenu"
+
+    MDBoxLayout:
+        md_bg_color: get_color_from_hex("#344954")
+        orientation: 'vertical'
+
+        MDToolbar:
+            title: 'Logout: back to menu'
+            md_bg_color: get_color_from_hex("#344954")
+            left_action_items: [["keyboard-return", lambda x: app.change_screen('LoginScreen')]]
+
+        MDCard:
+            size_hint: 0.8, 0.8
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            elevation: 30
+            radius: 30
+            #padding: 25
+            spacing: 25
+            orientation: 'vertical'
+            md_bg_color: get_color_from_hex("#292929")
+
+            GridLayout:
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                cols: 2
+                rows: 3
+                padding: 5
+                spacing: 15
+                adaptive_size: False
+                adaptive_height: True
+                Label:
+                    size_hint: None, 0.05
+                Label:
+                    size_hint: None, 0.05
+                TwoLineAvatarListItem:
+                    text: "Apply Fix"
+                    secondary_text: "Responder Policy solution by Mads Petersen"
+                    on_press:
+                        root.MadsRegex()
+
+                TwoLineAvatarListItem:
+                    text: "Purge Fix"
+                    secondary_text: "Remove all settings from Mads Petersen's solution"
+
+                TwoLineAvatarListItem:
+                    text: "Logout of ADC"
+                    secondary_text: "Disconnects this session and returns to menu"
+                    on_press:
+                        root.Logout_NS_Session()
+
+                TwoLineAvatarListItem:
+                    text: "Save NS Config"
+                    secondary_text: "Saves the current NS Config"
+                    on_press:
+                        root.Save_NS_Config()
