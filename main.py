@@ -26,10 +26,8 @@ from nssrc.com.citrix.netscaler.nitro.resource.config.audit import auditnslogpar
 from nssrc.com.citrix.netscaler.nitro.resource.config.audit import auditmessageaction
 from nssrc.com.citrix.netscaler.nitro.resource.config.responder import responderpolicy
 from nssrc.com.citrix.netscaler.nitro.resource.config.responder import responderglobal_responderpolicy_binding
-from nssrc.com.citrix.netscaler.nitro.resource.config.reputation import reputationsettings
-from nssrc.com.citrix.netscaler.nitro.resource.config.ns.nsmode import nsmode
-from nssrc.com.citrix.netscaler.nitro.resource.config.ns.nsfeature import nsfeature
-
+from nssrc.com.citrix.netscaler.nitro.resource.config.appfw import appfwpolicy
+from nssrc.com.citrix.netscaler.nitro.resource.config.appfw import appfwglobal_appfwpolicy_binding
 #Window Manager, managed and creates windows via KV file
 class WindowManager(ScreenManager):
     pass
@@ -154,7 +152,7 @@ class MainMenu(Screen):
         try:
             bind_responderpolicy1_global = responderglobal_responderpolicy_binding.responderglobal_responderpolicy_binding()
             bind_responderpolicy1_global.policyname = "GLOVR_RSP_POL_Log4Shell_Headers"
-            bind_responderpolicy1_global.priority = "100"
+            bind_responderpolicy1_global.priority = "90"
             bind_responderpolicy1_global.type = "REQ_OVERRIDE"
             bind_responderpolicy1_global.add(ns_session, bind_responderpolicy1_global)
         except Exception as error:
@@ -267,9 +265,54 @@ class MainMenu(Screen):
 
 
     def Enable_IP_Reputation(self):
-        nsfeature_enable = nsfeature()
-        nsfeature_enable.enable(nsfeature_enable.feature('rep'))
-        nsfeature.update_resource(ns_session, nsfeature_enable)
+
+        features_to_be_enabled = ['Rep', 'appfw']
+        ns_session.enable_features(features_to_be_enabled)
+
+
+        try:
+            custom_appfw_pol = appfwpolicy.appfwpolicy()
+            custom_appfw_pol.name = "Turbo_ADC_Custom_APPFW"
+            custom_appfw_pol.profilename = "APPFW_BLOCK"
+            custom_appfw_pol.rule = "CLIENT.IP.SRC.IPREP_IS_MALICIOUS"
+            custom_appfw_pol.add(ns_session, custom_appfw_pol)
+        except Exception as error:
+            errormessage = ("Error appfw1: " + str(error.args))
+
+        try:
+            bind_appfw_global = appfwglobal_appfwpolicy_binding.appfwglobal_appfwpolicy_binding()
+            bind_appfw_global.policyname = "Turbo_ADC_Custom_APPFW"
+            bind_appfw_global.state = "ENABLED"
+            bind_appfw_global.type = "REQ_OVERRIDE"
+            bind_appfw_global.priority = "100"
+            bind_appfw_global.add(ns_session, bind_appfw_global)
+
+        except Exception as error:
+            errormessage = ("Error appfw2: " + str(error.args))
+            print(errormessage)
+
+
+
+    def Disable_IP_Reputation(self):
+
+        #features_to_be_disabled = ['Rep']
+        #ns_session.disable_features(features_to_be_disabled)
+
+        try:
+            bind_appfw_global = appfwglobal_appfwpolicy_binding.appfwglobal_appfwpolicy_binding()
+            bind_appfw_global.policyname = "Turbo_ADC_Custom_APPFW"
+            bind_appfw_global.state = "DISABLED"
+            bind_appfw_global.delete(ns_session, bind_appfw_global)
+        except Exception as error:
+            errormessage = ("Error appfw2: " + str(error.args))
+            print(errormessage)
+
+        try:
+            custom_appfw_pol = appfwpolicy.appfwpolicy()
+            custom_appfw_pol.name = "Turbo_ADC_Custom_APPFW"
+            custom_appfw_pol.delete(ns_session, custom_appfw_pol)
+        except Exception as error:
+            errormessage = ("Error appfw1: " + str(error.args))
 
     def Save_NS_Config(self):
         ns_session.save_config()
