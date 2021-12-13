@@ -14,7 +14,7 @@ Always backup your ADC before implementing anything.
 List of mitigations included:
 
 1. Eric Julien & Mads Petersen's Regex fix: https://www.linkedin.com/posts/mads-behrendt-petersen-43049613_log4j-citrixctp-security-activity-6875776323139248128-P_N3
-2. Sebastian Parelius's suggestion to enable IP reputation: creates a globally bound default rule that block malicious IP's. "Alot of malicious traffic is from TOR exit nodes, and brightcloud tags those."
+2. Sebastian Parelius's suggestion to enable IP reputation: creates a globally bound default rule that block malicious IP's. "Alot of malicious traffic is from TOR exit nodes, and brightcloud tags those." - works with Premium licenses only
 
 Got your own hot fix that needs to be automated for community purposes?
 Contact me on LinkedIn: https://www.linkedin.com/in/mick-hilhorst/
