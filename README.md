@@ -2,7 +2,7 @@
 Toolkit to automate community fixes on the ADC regarding the Log4j vulnerability 
 
 Works with the KIVY(MD) library and the NITRO API.
-Code is written in python, application is a published .exe.
+Code is written in python, application is a packaged .exe.
 
 Please read all the respective fixes their descriptions before implementing them.
 This tool, or the fixes and their respective owner are not liable for any damage caused.
