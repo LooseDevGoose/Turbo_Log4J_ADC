@@ -26,6 +26,10 @@ from nssrc.com.citrix.netscaler.nitro.resource.config.audit import auditnslogpar
 from nssrc.com.citrix.netscaler.nitro.resource.config.audit import auditmessageaction
 from nssrc.com.citrix.netscaler.nitro.resource.config.responder import responderpolicy
 from nssrc.com.citrix.netscaler.nitro.resource.config.responder import responderglobal_responderpolicy_binding
+from nssrc.com.citrix.netscaler.nitro.resource.config.reputation import reputationsettings
+from nssrc.com.citrix.netscaler.nitro.resource.config.ns.nsmode import nsmode
+from nssrc.com.citrix.netscaler.nitro.resource.config.ns.nsfeature import nsfeature
+
 #Window Manager, managed and creates windows via KV file
 class WindowManager(ScreenManager):
     pass
@@ -82,7 +86,10 @@ class MainMenu(Screen):
             syslog_params = auditsyslogparams.auditsyslogparams()
             syslog_params.userdefinedauditlog = "YES"
             syslog_params.update(ns_session, syslog_params)
-
+        except Exception as error:
+            errormessage = ("Error: " + str(error.args))
+            print(errormessage)
+        try:
             #Set audit nslogparams to YES
             nslog_params = auditnslogparams.auditnslogparams()
             nslog_params.userdefinedauditlog = "YES"
@@ -99,7 +106,10 @@ class MainMenu(Screen):
             audit_message_action1.logtonewnslog = "YES"
             audit_message_action1.stringbuilderexpr = "\"Log4Shell  cve-2021-44228 URL match - Client IP=\"+ CLIENT.IP.SRC + \"; REQ Host=\"+ HTTP.REQ.HOSTNAME+ \"; REQ URL=\"+ HTTP.REQ.URL.DECODE_USING_TEXT_MODE + \" ; REQ HEADERS=\"+ HTTP.REQ.FULL_HEADER.DECODE_USING_TEXT_MODE"
             audit_message_action1.add(ns_session, audit_message_action1)
-
+        except Exception as error:
+            errormessage = ("Error: " + str(error.args))
+            print(errormessage)
+        try:
             audit_message_action2 = auditmessageaction.auditmessageaction()
             audit_message_action2.name = "Log4Shell_Headers_log"
             audit_message_action2.loglevel = "ALERT"
@@ -162,61 +172,104 @@ class MainMenu(Screen):
             print(errormessage)
 
 
-        def MadsRegexPurge(self):
-
+    def MadsRegexPurge(self):
+        i = 0
+        while i < 6:
+            i+= 1
             try:
-                # Set audit syslogparams to YES
+                # Set audit syslogparams to No
                 syslog_params = auditsyslogparams.auditsyslogparams()
                 syslog_params.userdefinedauditlog = "NO"
                 syslog_params.update(ns_session, syslog_params)
+            except Exception as error:
+                errormessage = ("Error1: " + str(error.args))
+                print(errormessage)
 
-                # Set audit nslogparams to YES
+            try:
+                # Set audit nslogparams to No
                 nslog_params = auditnslogparams.auditnslogparams()
                 nslog_params.userdefinedauditlog = "NO"
                 nslog_params.update(ns_session, nslog_params)
-
             except Exception as error:
-                errormessage = ("Error: " + str(error.args))
+                errormessage = ("Error2: " + str(error.args))
                 print(errormessage)
 
-            try:
-                audit_message_action1 = auditmessageaction.auditmessageaction()
-                audit_message_action1.name = "Log4Shell_URL_log"
-                audit_message_action1.delete(ns_session, audit_message_action1)
-
-                audit_message_action2 = auditmessageaction.auditmessageaction()
-                audit_message_action2.name = "Log4Shell_Headers_log"
-                audit_message_action2.delete(ns_session, audit_message_action1)
-
-            except Exception as error:
-                errormessage = ("Error: " + str(error.args))
-                print(errormessage)
-
-            try:
-                responderpolicy1 = responderpolicy.responderpolicy()
-                responderpolicy1.name = "GLOVR_RSP_POL_Log4Shell_Headers"
-                responderpolicy1.delete(ns_session, responderpolicy1)
-
-                responderpolicy2 = responderpolicy.responderpolicy()
-                responderpolicy2.name = "GLOVR_RSP_POL_Log4Shell_URL"
-                responderpolicy2.delete(ns_session, responderpolicy2)
-
-            except Exception as error:
-                errormessage = ("Error: " + str(error.args))
-                print(errormessage)
-
+            #Remove Global Bindings
             try:
                 bind_responderpolicy1_global = responderglobal_responderpolicy_binding.responderglobal_responderpolicy_binding()
                 bind_responderpolicy1_global.policyname = "GLOVR_RSP_POL_Log4Shell_Headers"
+                if bind_responderpolicy1_global.globalbindtype != "":
+                    bind_responderpolicy1_global.globalbindtype = ""
                 bind_responderpolicy1_global.delete(ns_session, bind_responderpolicy1_global)
 
+            except Exception as error:
+                errormessage = ("Error3: global policies1 " + str(error.args))
+                print(errormessage)
+
+            try:
                 bind_responderpolicy2_global = responderglobal_responderpolicy_binding.responderglobal_responderpolicy_binding()
+                print("4")
                 bind_responderpolicy2_global.policyname = "GLOVR_RSP_POL_Log4Shell_URL"
-                bind_responderpolicy2_global.delete(ns_session, bind_responderpolicy1_global)
+                if bind_responderpolicy2_global.globalbindtype != '':
+                    print(bind_responderpolicy2_global.globalbindtype)
+                    print("4-1")
+                    bind_responderpolicy2_global.globalbindtype = ''
+                    bind_responderpolicy2_global.delete(ns_session, bind_responderpolicy2_global)
 
             except Exception as error:
-                errormessage = ("Error: " + str(error.args))
+                errormessage = ("Error4: global policies2 " + str(error.args))
                 print(errormessage)
+
+            try:
+
+                audit_message_action1 = auditmessageaction.auditmessageaction()
+                audit_message_action1.name = "Log4Shell_URL_log"
+                audit_message_action1.unset = "Log4Shell_URL_log"
+                audit_message_action1.delete(ns_session, audit_message_action1)
+
+            except Exception as error:
+                errormessage = ("Error5: " + str(error.args))
+                print(errormessage)
+
+            try:
+                audit_message_action2 = auditmessageaction.auditmessageaction()
+                audit_message_action2.name = "Log4Shell_Headers_log"
+                audit_message_action2.unset = "Log4Shell_Headers_log"
+                audit_message_action2.delete(ns_session, audit_message_action2)
+
+            except Exception as error:
+                errormessage = ("Error6: " + str(error.args))
+                print(errormessage)
+
+            #Remove Responder polcies but remove logaction first
+            try:
+                responderpolicy1 = responderpolicy.responderpolicy()
+                responderpolicy1.name = "GLOVR_RSP_POL_Log4Shell_Headers"
+                responderpolicy1.logaction = "None"
+                responderpolicy1.unset = "GLOVR_RSP_POL_Log4Shell_Headers"
+                responderpolicy1.delete(ns_session, responderpolicy1)
+
+            except Exception as error:
+                errormessage = ("Error7: " + str(error.args))
+                print(errormessage)
+
+            try:
+                responderpolicy2 = responderpolicy.responderpolicy()
+                responderpolicy2.name = "GLOVR_RSP_POL_Log4Shell_URL"
+                responderpolicy2.logaction = "None"
+                responderpolicy2.unset = "GLOVR_RSP_POL_Log4Shell_URL"
+                responderpolicy2.delete(ns_session, responderpolicy2)
+
+            except Exception as error:
+                errormessage = ("Error8: " + str(error.args))
+                print(errormessage)
+
+
+
+    def Enable_IP_Reputation(self):
+        nsfeature_enable = nsfeature()
+        nsfeature_enable.enable(nsfeature_enable.feature('rep'))
+        nsfeature.update_resource(ns_session, nsfeature_enable)
 
     def Save_NS_Config(self):
         ns_session.save_config()
@@ -228,7 +281,7 @@ class MainMenu(Screen):
 class Log4j_ADC(MDApp):
 
     def build(self):
-        Window.size = (1200, 800)
+        #Window.size = (1200, 800)
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Blue"
         self.theme_cls.hue = 700

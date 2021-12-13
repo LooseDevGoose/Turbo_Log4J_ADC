@@ -52,7 +52,7 @@ WindowManager:
         #text field for ADC IP
         MDTextField:
             id: ns_ip
-            text: ""
+            text: "192.168.176.107"
             hint_text: "Netscaler IP"
             icon_right: "ip-network"
             size_hint_x: None
@@ -67,7 +67,7 @@ WindowManager:
         MDTextField:
             id: ns_username
             hint_text: "Username"
-            text: ""
+            text: "nsroot"
             helper_text: "Hopefully not nsroot ;)"
             helper_text_mode: "on_focus"
             icon_right: "account"
@@ -81,7 +81,7 @@ WindowManager:
         #Text field for password
         MDTextField:
             id: ns_password
-            text: ""
+            text: "nsroot1"
             hint_text: "Password"
             icon_right: "eye-off"
             size_hint_x: None
@@ -151,7 +151,7 @@ WindowManager:
             GridLayout:
                 pos_hint: {"center_x": 0.5, "center_y": 0.5}
                 cols: 2
-                rows: 3
+                rows: 4
                 padding: 5
                 spacing: 15
                 adaptive_size: False
@@ -160,6 +160,7 @@ WindowManager:
                     size_hint: None, 0.05
                 Label:
                     size_hint: None, 0.05
+
                 TwoLineAvatarListItem:
                     text: "Apply Fix"
                     secondary_text: "Responder Policy solution by Mads Petersen"
@@ -169,12 +170,27 @@ WindowManager:
                 TwoLineAvatarListItem:
                     text: "Purge Fix"
                     secondary_text: "Remove all settings from Mads Petersen's solution"
+                    on_press:
+                        root.MadsRegexPurge()
+
+               # TwoLineAvatarListItem:
+                    #text: "Enable IP Reputation"
+                    #secondary_text: "Only works on Premium Licenses"
+                   # on_press:
+                    #    root.Enable_IP_Reputation()
+
+               # TwoLineAvatarListItem:
+                   # text: "Disable IP Reputation"
+                  #  secondary_text: "Only works on Premium Licenses"
+
+
 
                 TwoLineAvatarListItem:
                     text: "Logout of ADC"
                     secondary_text: "Disconnects this session and returns to menu"
                     on_press:
                         root.Logout_NS_Session()
+                        app.change_screen('LoginScreen')
 
                 TwoLineAvatarListItem:
                     text: "Save NS Config"
