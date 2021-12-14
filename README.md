@@ -29,6 +29,9 @@ List of mitigations included:
 
 1. Eric Julien & Mads Petersen's Regex fix v2: https://www.linkedin.com/posts/mads-behrendt-petersen-43049613_log4j-citrixctp-security-activity-6875776323139248128-P_N3
 2. Sebastian Parelius's suggestion to enable IP reputation: creates a globally bound default rule that block malicious IP's. "Alot of malicious traffic is from TOR exit nodes, and brightcloud tags those." - works with Premium licenses only
+3. Citrix's own responder policies: https://mickhilhorst.com/wp-content/uploads/2021/12/Log4j_ADC.zip
+
+You can combine these settings if you like.
 
 Got your own hot fix that needs to be automated for community purposes?
 Contact me on LinkedIn: https://www.linkedin.com/in/mick-hilhorst/
