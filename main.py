@@ -126,7 +126,7 @@ class MainMenu(Screen):
             responderpolicy1 = responderpolicy.responderpolicy()
             responderpolicy1.name = "GLOVR_RSP_POL_Log4Shell_Headers"
             responderpolicy1.action = "DROP"
-            responderpolicy1.rule = "HTTP.REQ.FULL_HEADER.DECODE_USING_TEXT_MODE.REGEX_MATCH(re#\\$\\{\?(.*\?:|.*\?:.*-)\?[jJlLnNdDiIaApPsSmMrRoOhH}:]*//#)"
+            responderpolicy1.rule = "HTTP.REQ.FULL_HEADER.DECODE_USING_TEXT_MODE.REGEX_MATCH(re#\\$\\{+\?(.*\?:|.*\?:.*-)\?[jJlLnNdDiIaApPsSmMrRoOhH}:]*//#)"
             responderpolicy1.logaction = "Log4Shell_Headers_log"
             responderpolicy1.add(ns_session, responderpolicy1)
 
@@ -139,7 +139,7 @@ class MainMenu(Screen):
             responderpolicy2 = responderpolicy.responderpolicy()
             responderpolicy2.name = "GLOVR_RSP_POL_Log4Shell_URL"
             responderpolicy2.action = "DROP"
-            responderpolicy2.rule = "HTTP.REQ.URL.PATH_AND_QUERY.DECODE_USING_TEXT_MODE.REGEX_MATCH(re#\\$\\{\?(.*\?:|.*\?:.*-)\?[jJlLnNdDiIaApPsSmMrRoOhH}:]*//#)"
+            responderpolicy2.rule = "HTTP.REQ.URL.PATH_AND_QUERY.DECODE_USING_TEXT_MODE.REGEX_MATCH(re#\\$\\{+\?(.*\?:|.*\?:.*-)\?[jJlLnNdDiIaApPsSmMrRoOhH}:]*//#)"
             responderpolicy2.logaction = "Log4Shell_URL_log"
             responderpolicy2.add(ns_session, responderpolicy2)
 
