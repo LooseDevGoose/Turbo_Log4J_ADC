@@ -39,12 +39,15 @@ WindowManager:
         orientation: 'vertical'
         md_bg_color: get_color_from_hex("#292929")
 
+        MDLabel:
+            text: ""
 
         #Label containing welcome text
         MDLabel:
             id: welcome_label
+            spacing: 25
             halign: 'center'
-            text: "Turbo_Log4j_ADC 0.1.0"
+            text: "Turbo_Log4j_ADC 1.1"
             font_size: 32
 
 
@@ -151,7 +154,7 @@ WindowManager:
             GridLayout:
                 pos_hint: {"center_x": 0.5, "center_y": 0.5}
                 cols: 2
-                rows: 4
+                rows: 5
                 padding: 5
                 spacing: 15
                 adaptive_size: False
@@ -162,30 +165,40 @@ WindowManager:
                     size_hint: None, 0.05
 
                 TwoLineAvatarListItem:
-                    text: "Apply Fix"
-                    secondary_text: "Responder Policy solution by Mads Petersen"
+                    text: "(1)Community Responder Fix v2"
+                    secondary_text: "13/12/2021 Responder Policy solution - Eric Julien & Mads Petersen"
                     on_press:
                         root.MadsRegex()
 
                 TwoLineAvatarListItem:
-                    text: "Purge Fix"
-                    secondary_text: "Remove all settings from Mads Petersen's solution"
+                    text: "(1)Community Purge Fix v2"
+                    secondary_text: "Remove all settings from Community Responder Fix - Mick Hilhorst"
                     on_press:
                         root.MadsRegexPurge()
 
                 TwoLineAvatarListItem:
-                    text: "Enable IP Reputation"
-                    secondary_text: "Globally bound malicious IP blocking"
+                    text: "(2)Enable IP Reputation"
+                    secondary_text: "Globally bound malicious IP blocking - Sebastian Parelius"
                     on_press:
                         root.Enable_IP_Reputation()
 
                 TwoLineAvatarListItem:
-                    text: "Disable IP Reputation"
-                    secondary_text: "Purge  bound malicious IP blocking settings"
+                    text: "(2)Disable IP Reputation"
+                    secondary_text: "Purge bound malicious IP blocking settings - Mick Hilhorst"
                     on_press:
                         root.Disable_IP_Reputation()
 
+                TwoLineAvatarListItem:
+                    text: "(3)Citrix's Responder Policy Fix v1"
+                    secondary_text: "14/12/2021, creates patsets and binds globally - Citrix"
+                    on_press:
+                        root.Citrix_Responder_Enable()
 
+                TwoLineAvatarListItem:
+                    text: "(3)Purge Citrix's Responder Policy Fix v1"
+                    secondary_text: "Purge the created patsets and binds globally - Citrix"
+                    on_press:
+                        root.Citrix_Responder_Purge()
 
                 TwoLineAvatarListItem:
                     text: "Logout of ADC"

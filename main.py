@@ -28,6 +28,8 @@ from nssrc.com.citrix.netscaler.nitro.resource.config.responder import responder
 from nssrc.com.citrix.netscaler.nitro.resource.config.responder import responderglobal_responderpolicy_binding
 from nssrc.com.citrix.netscaler.nitro.resource.config.appfw import appfwpolicy
 from nssrc.com.citrix.netscaler.nitro.resource.config.appfw import appfwglobal_appfwpolicy_binding
+from nssrc.com.citrix.netscaler.nitro.resource.config.policy import  policypatset
+from nssrc.com.citrix.netscaler.nitro.resource.config.policy import policypatset_pattern_binding
 #Window Manager, managed and creates windows via KV file
 class WindowManager(ScreenManager):
     pass
@@ -63,7 +65,6 @@ class LoginScreen(Screen):
 
             ns_session = nitro_service(f"{nsip}", f"{protocol}")
             ns_session.login(f"{nsusername}", f"{nspassword}", 3600)
-            print(protocol)
             return (ns_session.isLogin())
 
         except Exception as error:
@@ -125,12 +126,9 @@ class MainMenu(Screen):
             responderpolicy1 = responderpolicy.responderpolicy()
             responderpolicy1.name = "GLOVR_RSP_POL_Log4Shell_Headers"
             responderpolicy1.action = "DROP"
-            responderpolicy1.rule = "HTTP.REQ.FULL_HEADER.DECODE_USING_TEXT_MODE.REGEX_MATCH(re#((\\${)((\\${)\?((upper|lower|(env)\?:.*:.*})\?[jJlLnNdDiIaApPsSmMrRoOhH}:]*))+)//#)"
+            responderpolicy1.rule = "HTTP.REQ.FULL_HEADER.DECODE_USING_TEXT_MODE.REGEX_MATCH(re#\\$\\{\?(.*\?:|.*\?:.*-)\?[jJlLnNdDiIaApPsSmMrRoOhH}:]*//#)"
             responderpolicy1.logaction = "Log4Shell_Headers_log"
             responderpolicy1.add(ns_session, responderpolicy1)
-
-
-
 
         except Exception as error:
             errormessage = ("Error: " + str(error.args))
@@ -141,7 +139,7 @@ class MainMenu(Screen):
             responderpolicy2 = responderpolicy.responderpolicy()
             responderpolicy2.name = "GLOVR_RSP_POL_Log4Shell_URL"
             responderpolicy2.action = "DROP"
-            responderpolicy2.rule = "HTTP.REQ.URL.PATH_AND_QUERY.DECODE_USING_TEXT_MODE.REGEX_MATCH(re#((\\${)((\\${)\?((upper|lower|(env)\?:.*:.*})\?[jJlLnNdDiIaApPsSmMrRoOhH}:]*))+)//#)"
+            responderpolicy2.rule = "HTTP.REQ.URL.PATH_AND_QUERY.DECODE_USING_TEXT_MODE.REGEX_MATCH(re#\\$\\{\?(.*\?:|.*\?:.*-)\?[jJlLnNdDiIaApPsSmMrRoOhH}:]*//#)"
             responderpolicy2.logaction = "Log4Shell_URL_log"
             responderpolicy2.add(ns_session, responderpolicy2)
 
@@ -162,7 +160,7 @@ class MainMenu(Screen):
         try:
             bind_responderpolicy2_global = responderglobal_responderpolicy_binding.responderglobal_responderpolicy_binding()
             bind_responderpolicy2_global.policyname = "GLOVR_RSP_POL_Log4Shell_URL"
-            bind_responderpolicy2_global.priority = "110"
+            bind_responderpolicy2_global.priority = "100"
             bind_responderpolicy2_global.type = "REQ_OVERRIDE"
             bind_responderpolicy2_global.add(ns_session, bind_responderpolicy2_global)
         except Exception as error:
@@ -206,11 +204,9 @@ class MainMenu(Screen):
 
             try:
                 bind_responderpolicy2_global = responderglobal_responderpolicy_binding.responderglobal_responderpolicy_binding()
-                print("4")
                 bind_responderpolicy2_global.policyname = "GLOVR_RSP_POL_Log4Shell_URL"
                 if bind_responderpolicy2_global.globalbindtype != '':
                     print(bind_responderpolicy2_global.globalbindtype)
-                    print("4-1")
                     bind_responderpolicy2_global.globalbindtype = ''
                     bind_responderpolicy2_global.delete(ns_session, bind_responderpolicy2_global)
 
@@ -284,7 +280,7 @@ class MainMenu(Screen):
             bind_appfw_global.policyname = "Turbo_ADC_Custom_APPFW"
             bind_appfw_global.state = "ENABLED"
             bind_appfw_global.type = "REQ_OVERRIDE"
-            bind_appfw_global.priority = "100"
+            bind_appfw_global.priority = "110"
             bind_appfw_global.add(ns_session, bind_appfw_global)
 
         except Exception as error:
@@ -314,6 +310,118 @@ class MainMenu(Screen):
         except Exception as error:
             errormessage = ("Error appfw1: " + str(error.args))
 
+
+    def Citrix_Responder_Enable(self):
+
+        try:
+            #Creates Policy for Patset per https://www.citrix.com/blogs/2021/12/13/guidance-for-reducing-apache-log4j-security-vulnerability-risk-with-citrix-waf/
+            policy = policypatset.policypatset()
+            policy.name = "patset_cve_2021_44228"
+            policy.add(ns_session, policy)
+            print("done1")
+        except Exception as error:
+            errormessage = ("Error citrix1: " + str(error.args))
+            print(errormessage)
+
+        try:
+            patternset_protocol = policypatset_pattern_binding.policypatset_pattern_binding()
+            patternset_protocol.name = "patset_cve_2021_44228"
+            patternset_protocol.String = "ldap"
+            patternset_protocol.add(ns_session, patternset_protocol)
+            patternset_protocol.String = 'http'
+            patternset_protocol.add(ns_session, patternset_protocol)
+            patternset_protocol.String = 'https'
+            patternset_protocol.add(ns_session, patternset_protocol)
+            patternset_protocol.String = 'ldaps'
+            patternset_protocol.add(ns_session, patternset_protocol)
+            patternset_protocol.String = 'rmi'
+            patternset_protocol.add(ns_session, patternset_protocol)
+            patternset_protocol.String = 'dns'
+            patternset_protocol.add(ns_session, patternset_protocol)
+
+        except Exception as error:
+            errormessage = ("Error citrix2: " + str(error.args))
+            print(errormessage)
+
+        try:
+            #Create Responder policy based on patsets
+            responder = responderpolicy.responderpolicy()
+            responder.name = 'mitigate_cve_2021_44228'
+            responder.rule = "HTTP.REQ.FULL_HEADER.SET_TEXT_MODE(URLENCODED).DECODE_USING_TEXT_MODE.AFTER_STR(\"${\").BEFORE_STR(\"}\").CONTAINS(\"${\") || HTTP.REQ.FULL_HEADER.SET_TEXT_MODE(URLENCODED).DECODE_USING_TEXT_MODE.SET_TEXT_MODE(IGNORECASE).STRIP_CHARS(\"${: }/+\").AFTER_STR(\"jndi\").CONTAINS_ANY(\"patset_cve_2021_44228\") || HTTP.REQ.BODY(8192).SET_TEXT_MODE(URLENCODED).DECODE_USING_TEXT_MODE.AFTER_STR(\"${\").BEFORE_STR(\"}\").CONTAINS(\"${\") || HTTP.REQ.BODY(8192).SET_TEXT_MODE(URLENCODED).DECODE_USING_TEXT_MODE. SET_TEXT_MODE(IGNORECASE).STRIP_CHARS(\"${: }/+\").AFTER_STR(\"jndi\").CONTAINS_ANY(\"patset_cve_2021_44228\")"
+            responder.action = "DROP"
+            responder.add(ns_session, responder)
+
+        except Exception as error:
+            errormessage = ("Error citrix3: " + str(error.args))
+            print(errormessage)
+
+        try:
+            #Bind Responder policy globally
+            bind_responderpolicy_global = responderglobal_responderpolicy_binding.responderglobal_responderpolicy_binding()
+            bind_responderpolicy_global.policyname = "mitigate_cve_2021_44228"
+            bind_responderpolicy_global.priority = "120"
+            bind_responderpolicy_global.type = "REQ_OVERRIDE"
+            bind_responderpolicy_global.add(ns_session, bind_responderpolicy_global)
+        except Exception as error:
+            errormessage = ("Error citrix4: " + str(error.args))
+            print(errormessage)
+
+    def Citrix_Responder_Purge(self):
+
+        try:
+            #Bind Responder policy globally
+            bind_responderpolicy_global = responderglobal_responderpolicy_binding.responderglobal_responderpolicy_binding()
+            bind_responderpolicy_global.policyname = "mitigate_cve_2021_44228"
+            if  bind_responderpolicy_global.globalbindtype != '':
+                print(bind_responderpolicy_global.globalbindtype)
+                bind_responderpolicy_global.globalbindtype = ''
+                bind_responderpolicy_global.delete(ns_session, bind_responderpolicy_global)
+
+        except Exception as error:
+            errormessage = ("Error citrix4: " + str(error.args))
+            print(errormessage)
+
+        try:
+            #Create Responder policy based on patsets
+            responder = responderpolicy.responderpolicy()
+            responder.name = 'mitigate_cve_2021_44228'
+            responder.delete(ns_session, responder)
+
+        except Exception as error:
+            errormessage = ("Error citrix4: " + str(error.args))
+            print(errormessage)
+
+
+        try:
+            patternset_protocol = policypatset_pattern_binding.policypatset_pattern_binding()
+            patternset_protocol.name = "patset_cve_2021_44228"
+            patternset_protocol.String = "ldap"
+            patternset_protocol.delete(ns_session, patternset_protocol)
+            patternset_protocol.String = 'http'
+            patternset_protocol.delete(ns_session, patternset_protocol)
+            patternset_protocol.String = 'https'
+            patternset_protocol.delete(ns_session, patternset_protocol)
+            patternset_protocol.String = 'ldaps'
+            patternset_protocol.delete(ns_session, patternset_protocol)
+            patternset_protocol.String = 'rmi'
+            patternset_protocol.delete(ns_session, patternset_protocol)
+            patternset_protocol.String = 'dns'
+            patternset_protocol.delete(ns_session, patternset_protocol)
+
+        except Exception as error:
+            errormessage = ("Error citrix2: " + str(error.args))
+            print(errormessage)
+
+        try:
+            #Creates Policy for Patset per https://www.citrix.com/blogs/2021/12/13/guidance-for-reducing-apache-log4j-security-vulnerability-risk-with-citrix-waf/
+            policy = policypatset.policypatset()
+            policy.name = "patset_cve_2021_44228"
+            policy.delete(ns_session, policy)
+
+        except Exception as error:
+            errormessage = ("Error citrix1: " + str(error.args))
+            print(errormessage)
+
     def Save_NS_Config(self):
         ns_session.save_config()
 
@@ -328,7 +436,7 @@ class Log4j_ADC(MDApp):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Blue"
         self.theme_cls.hue = 700
-        self.title = "Turbo_Log4j_ADC 0.1.0"
+        self.title = "Turbo_Log4j_ADC 1.1"
         self.icon = "Images/Logo.png"
         Builder.load_file('Log4j_ADC.kv')
 
