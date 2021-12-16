@@ -30,7 +30,5 @@ Contact me on LinkedIn: https://www.linkedin.com/in/mick-hilhorst/
 ```diff
 +- Download the .EXE below:
 ```
-
-Download temporarily removed due to suspected big bug.
 https://mickhilhorst.com/wp-content/uploads/2021/12/Turbo_Log4j_ADC.zip
 
