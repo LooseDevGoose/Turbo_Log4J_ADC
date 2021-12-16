@@ -19,7 +19,7 @@ Always backup your ADC before implementing anything.
 
 List of mitigations included:
 
-1. Eric Julien & Gunther De Poortere & Mads Petersen's Regex fix v2: https://www.linkedin.com/posts/mads-behrendt-petersen-43049613_log4j-citrixctp-security-activity-6875776323139248128-P_N3
+1. Eric Julien & Gunther De Poortere & Mads Petersen's Regex fix v2: https://www.linkedin.com/posts/mads-behrendt-petersen-43049613_log4j-citrixctp-security-activity-6875776323139248128-P_N3 (the v3 is not in place yet).
 2. Sebastian Parelius's suggestion to enable IP reputation: creates a globally bound default rule that block malicious IP's. "Alot of malicious traffic is from TOR exit nodes, and brightcloud tags those." - works with Premium licenses only
 3. Citrix's own responder policies: https://www.citrix.com/blogs/2021/12/13/guidance-for-reducing-apache-log4j-security-vulnerability-risk-with-citrix-waf/
 
