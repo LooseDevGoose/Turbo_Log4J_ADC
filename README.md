@@ -30,5 +30,5 @@ Contact me on LinkedIn: https://www.linkedin.com/in/mick-hilhorst/
 ```diff
 +- Download the .EXE below:
 ```
-bug found, new version uploading soon to make sure you dont get faulty regex expressions. 
+https://mickhilhorst.com/wp-content/uploads/2021/12/Turbo_Log4j_ADCV3.zip
 
